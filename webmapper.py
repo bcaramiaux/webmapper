@@ -6,6 +6,7 @@ import mapperstorage
 import netifaces # a library to find available network interfaces
 import sys, os, os.path, threading, json, re, pdb
 from random import randint
+import datetime
 
 networkInterfaces = {'active': '', 'available': []}
 
@@ -300,10 +301,38 @@ def new_map(args):
     if len(args) > 2 and type(args[2]) is dict:
         map.set_properties(args[2])
     map.push()
+    # log
+    if (os.path.isfile('log.txt')):
+        f = open('log.txt', 'a')
+    else:
+        f = open('log.txt', 'w')
+    row_to_write = '%04i%02i%02i %02i %02i %02i new_map %s %s\n' % (datetime.datetime.now().year,
+                                                                    datetime.datetime.now().month,
+                                                                    datetime.datetime.now().day,
+                                                                    datetime.datetime.now().hour, 
+                                                                    datetime.datetime.now().minute, 
+                                                                    datetime.datetime.now().second, 
+                                                                    args[0], args[1])
+    f.write(row_to_write)
+    f.close()
 
 def release_map(args):
     # todo: check for convergent maps, only release selected
     find_sig(args[0]).maps().intersect(find_sig(args[1]).maps()).release()
+    # log
+    if (os.path.isfile('log.txt')):
+        f = open('log.txt', 'a')
+    else:
+        f = open('log.txt', 'w')
+    row_to_write = '%04i%02i%02i %02i %02i %02i del_map %s %s\n' % (datetime.datetime.now().year,
+                                                                    datetime.datetime.now().month,
+                                                                    datetime.datetime.now().day,
+                                                                    datetime.datetime.now().hour, 
+                                                                    datetime.datetime.now().minute, 
+                                                                    datetime.datetime.now().second, 
+                                                                    args[0], args[1])
+    f.write(row_to_write)
+    f.close()
 
 server.add_command_handler("subscribe", lambda x: subscribe(x))
 
